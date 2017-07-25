@@ -11,6 +11,7 @@ type Token struct {
 const (
 	ILLEGAL = "ILLEGAL" // illegal characters
 	EOF     = "EOF"     // end of the file
+
 	IDENT   = "IDENT"   // add, foobar, x
 	INT     = "INT"     // 1,2,3...
 
@@ -21,6 +22,7 @@ const (
 	// Delimiters
 	COMMA     = ","
 	SEMICOLON = ";"
+
 	LPAREN    = "("
 	RPAREN    = ")"
 	LBRACE    = "{"
