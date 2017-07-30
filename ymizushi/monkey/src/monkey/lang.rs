@@ -1,3 +1,5 @@
+use std::char;
+
 pub enum TokenType {
     ILLEGAL,
     EOF,
@@ -52,5 +54,22 @@ pub struct Parser<'a> {
 impl<'a> Parser<'a> {
     pub fn parse(&self) {
         return ();
+    }
+}
+
+pub struct Lexer {
+    pub input: String,
+    pub position: usize,
+    pub read_position: usize,
+    pub ch: char
+}
+
+impl Lexer {
+    pub fn peek_char(&self) -> char {
+        if self.read_position >=  self.input.len() {
+            return '0';
+        } else {
+            return self.input.chars().nth(self.read_position).unwrap() ;
+        }
     }
 }
