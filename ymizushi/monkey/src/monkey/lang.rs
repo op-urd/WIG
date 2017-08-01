@@ -29,7 +29,7 @@ pub struct Token {
 }
 
 impl TokenType {
-    pub fn from_string (s: String) -> TokenType {
+    pub fn from_string(s: String) -> TokenType {
         match s.as_ref() {
             "\n" => TokenType::EOF,
             "let" => TokenType::LET,
@@ -57,19 +57,67 @@ impl<'a> Parser<'a> {
     }
 }
 
-pub struct Lexer {
+pub struct Lexer<'a> {
     pub input: String,
     pub position: usize,
     pub read_position: usize,
-    pub ch: char
+    pub ch: &'a mut char
 }
 
-impl Lexer {
-    pub fn peek_char(&self) -> char {
-        if self.read_position >=  self.input.len() {
-            return '0';
+impl<'a> Lexer<'a> {
+    pub fn new(input: String) -> Lexer<'a> {
+        let l = Lexer {
+            input: input,
+            position: 0,
+            read_position: 0,
+            ch: &mut ' '
+        };
+        l.read_char();
+        return l;
+    }
+
+    pub fn read_char(&'a self)  {
+        if self.read_position >= self.input.len() {
+            self.ch = &'0';
         } else {
-            return self.input.chars().nth(self.read_position).unwrap() ;
+            let ch = self.input.chars().nth(self.read_position).unwrap();
+            self.ch = &ch;
+            self.position = self.read_position;
+            self.read_position += 1;
         }
     }
+
+    pub fn next_token(&self) -> Token {
+        let token_type = TokenType::from_string(self.ch.to_string());
+        self.read_char();
+        return Token {
+            token_type: token_type,
+            value: Some(Value::Str(self.ch.to_string()))
+        }
+    }
+
+    pub fn peek_char(&self) -> char {
+        if self.read_position >= self.input.len() {
+            return '0';
+        } else {
+            return self.input.chars().nth(self.read_position).unwrap();
+        }
+    }
+}
+
+
+#[test]
+fn next_token() {
+    let input = String::from("=+(){},;");
+    let tests = [
+        (TokenType::ASSIGN, "="),
+        (TokenType::PLUS, "+"),
+        (TokenType::LPAREN, "("),
+        (TokenType::RPAREN, ")"),
+        (TokenType::LBRACE, "{"),
+        (TokenType::RBRACE, "}"),
+        (TokenType::COMMA, ","),
+        (TokenType::SEMICOLON, ";"),
+        (TokenType::EOF, ""),
+    ];
 }
