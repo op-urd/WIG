@@ -26,7 +26,8 @@ if (5 < 10) {
         value: None
     }; 1];
 
-    let lexer = Lexer::new(input_str);
+    let mut c = ' ';
+    let lexer = Lexer::new(input_str, &mut c);
     let parser = Parser {tokens:&tokens};
     parser.parse();
 
