@@ -74,22 +74,23 @@ impl<'a> Lexer<'a> {
         };
     }
 
-    //    pub fn read_char(&'a mut self)  {
-    //        if self.read_position >= self.input.len() {
-    //            self.ch = & '0';
-    //        } else {
-    //            self.ch = & self.input.chars().nth(self.read_position).unwrap();
-    //            self.position = self.read_position;
-    //            self.read_position += 1;
-    //        }
-    //    }
+    pub fn read_char(&'a mut self) -> char {
+        if self.read_position >= self.input.len() {
+            return '0';
+        } else {
+            let c = self.input.chars().nth(self.read_position).unwrap();
+            self.position = self.read_position;
+            self.read_position += 1;
+            return c;
+        }
+    }
 
     pub fn next_token(&'a mut self) -> Token {
         let token_type = TokenType::from_string(self.ch.to_string());
-        //        self.read_char();
+        let c = self.read_char();
         return Token {
             token_type: token_type,
-            value: Some(Value::Str(self.ch.to_string()))
+            value: Some(Value::Str(c.to_string()))
         };
     }
 
