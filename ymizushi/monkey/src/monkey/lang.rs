@@ -61,11 +61,11 @@ pub struct Lexer<'a> {
     pub input: String,
     pub position: usize,
     pub read_position: usize,
-    pub ch: &'a char
+    pub ch: &'a mut char
 }
 
 impl<'a> Lexer<'a> {
-    pub fn new(input: String, c: &'a char) -> Lexer<'a> {
+    pub fn new(input: String, c: &'a mut char) -> Lexer<'a> {
         return Lexer {
             input: input,
             position: 0,
@@ -74,23 +74,23 @@ impl<'a> Lexer<'a> {
         };
     }
 
-//    pub fn read_char(&'a mut self)  {
-//        if self.read_position >= self.input.len() {
-//            self.ch = & '0';
-//        } else {
-//            self.ch = & self.input.chars().nth(self.read_position).unwrap();
-//            self.position = self.read_position;
-//            self.read_position += 1;
-//        }
-//    }
+    //    pub fn read_char(&'a mut self)  {
+    //        if self.read_position >= self.input.len() {
+    //            self.ch = & '0';
+    //        } else {
+    //            self.ch = & self.input.chars().nth(self.read_position).unwrap();
+    //            self.position = self.read_position;
+    //            self.read_position += 1;
+    //        }
+    //    }
 
     pub fn next_token(&'a mut self) -> Token {
         let token_type = TokenType::from_string(self.ch.to_string());
-//        self.read_char();
+        //        self.read_char();
         return Token {
             token_type: token_type,
             value: Some(Value::Str(self.ch.to_string()))
-        }
+        };
     }
 
     pub fn peek_char(&self) -> char {
