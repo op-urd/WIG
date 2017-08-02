@@ -65,29 +65,27 @@ pub struct Lexer<'a> {
 }
 
 impl<'a> Lexer<'a> {
-    pub fn new(input: String) -> Lexer<'a> {
-        let l = Lexer {
+    pub fn new(input: String) -> &'a mut Lexer<'a> {
+        let l: &'a mut Lexer = &mut Lexer {
             input: input,
             position: 0,
             read_position: 0,
-            ch: &mut ' '
+            ch: & mut ' '
         };
-        l.read_char();
         return l;
     }
 
-    pub fn read_char(&'a self)  {
+    pub fn read_char(&'a mut self)  {
         if self.read_position >= self.input.len() {
-            self.ch = &'0';
+            self.ch = & mut '0';
         } else {
-            let ch = self.input.chars().nth(self.read_position).unwrap();
-            self.ch = &ch;
+            self.ch = & mut self.input.chars().nth(self.read_position).unwrap();
             self.position = self.read_position;
             self.read_position += 1;
         }
     }
 
-    pub fn next_token(&self) -> Token {
+    pub fn next_token(&'a mut self) -> Token {
         let token_type = TokenType::from_string(self.ch.to_string());
         self.read_char();
         return Token {
