@@ -118,4 +118,9 @@ fn next_token() {
         (TokenType::SEMICOLON, ";"),
         (TokenType::EOF, ""),
     ];
+    let l = &mut Lexer::new(input, ' ');
+    for e in tests.into_iter() {
+        let t = l.next_token();
+        assert_eq!(t.token_type, e.1);
+    }
 }
