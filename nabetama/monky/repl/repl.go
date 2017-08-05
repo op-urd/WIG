@@ -4,7 +4,7 @@ import (
 	"io"
 	"bufio"
 	"fmt"
-	"github.com/op-urd/WIG/nabetama/monky/lexar"
+	"github.com/op-urd/WIG/nabetama/monky/lexer"
 	"github.com/op-urd/WIG/nabetama/monky/token"
 
 )
@@ -24,7 +24,7 @@ func Start(in io.Reader, out io.Writer) {
 		}
 
 		line := scanner.Text()
-		l := lexar.New(line)
+		l := lexer.New(line)
 
 		for tok := l.NextToken(); tok.Type != token.EOF; tok = l.NextToken(){
 			fmt.Printf("%+v\n", tok)

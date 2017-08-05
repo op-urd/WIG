@@ -1,4 +1,4 @@
-package lexar
+package lexer
 
 import (
 	"testing"

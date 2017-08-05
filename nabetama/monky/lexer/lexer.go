@@ -1,23 +1,23 @@
-package lexar
+package lexer
 
 import (
 	"github.com/op-urd/WIG/nabetama/monky/token"
 )
 
-type Lexar struct {
+type Lexer struct {
 	input        string
 	position     int
 	readPosition int
 	ch           byte
 }
 
-func New(input string) *Lexar {
-	l := &Lexar{input: input}
+func New(input string) *Lexer {
+	l := &Lexer{input: input}
 	l.readChar()
 	return l
 }
 
-func (l *Lexar) readChar() {
+func (l *Lexer) readChar() {
 	if l.readPosition >= len(l.input) {
 		l.ch = 0
 	} else {
@@ -27,7 +27,7 @@ func (l *Lexar) readChar() {
 	l.readPosition += 1
 }
 
-func (l *Lexar) NextToken() token.Token {
+func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
 	l.skipWhiteSpace()
 	switch l.ch {
@@ -95,7 +95,7 @@ func newToken(tokenType token.TokenType, ch byte) token.Token {
 	return token.Token{Type: tokenType, Literal: string(ch)}
 }
 
-func (l *Lexar) readIdentifier() string {
+func (l *Lexer) readIdentifier() string {
 	position := l.position
 	for isLetter(l.ch) {
 		l.readChar()
@@ -103,7 +103,7 @@ func (l *Lexar) readIdentifier() string {
 	return l.input[position:l.position]
 }
 
-func (l *Lexar) readNumber() string {
+func (l *Lexer) readNumber() string {
 	position := l.position
 	for isDegit(l.ch) {
 		l.readChar()
@@ -111,13 +111,13 @@ func (l *Lexar) readNumber() string {
 	return l.input[position:l.position]
 }
 
-func (l *Lexar) skipWhiteSpace() {
+func (l *Lexer) skipWhiteSpace() {
 	for l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r' {
 		l.readChar()
 	}
 }
 
-func (l *Lexar) peekChar() byte {
+func (l *Lexer) peekChar() byte {
 	if l.readPosition >= len(l.input) {
 		return 0
 	}
