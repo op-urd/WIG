@@ -95,6 +95,30 @@ impl Lexer {
             return self.input.chars().nth(self.read_position.get()).unwrap();
         }
     }
+
+    pub fn read_number(&self) {
+        let ch = self.peek_char();
+        while is_digit(ch) {
+            self.read_char();
+        }
+        // 途中まで実装
+//        return self.input.chars().nth(self.position.get()).unwrap();
+    }
+
+    pub fn skip_white_space(&self) {
+        let ch = self.peek_char();
+        while ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r' {
+            self.read_char();
+        }
+    }
+}
+
+fn is_letter(ch: char) -> bool {
+    return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_'
+}
+
+fn is_digit(ch: char) -> bool {
+    return '0' <= ch && ch <= '9';
 }
 
 
