@@ -96,13 +96,26 @@ impl Lexer {
         }
     }
 
-    pub fn read_number(&self) {
+    pub unsafe fn read_identifier(&self) -> String {
+        let start_position = self.position.get();
+        let ch = self.peek_char();
+        while is_letter(ch) {
+            self.read_char();
+        }
+        let end_position = self.position.get();
+        let s = self.input.slice_unchecked(start_position, end_position);
+        return s.to_string();
+    }
+
+    pub unsafe fn read_number(&self) -> String {
+        let start_position = self.position.get();
         let ch = self.peek_char();
         while is_digit(ch) {
             self.read_char();
         }
-        // 途中まで実装
-//        return self.input.chars().nth(self.position.get()).unwrap();
+        let end_position = self.position.get();
+        let s = self.input.slice_unchecked(start_position, end_position);
+        return s.to_string();
     }
 
     pub fn skip_white_space(&self) {
