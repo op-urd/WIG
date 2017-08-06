@@ -20,12 +20,6 @@ if (5 < 10) {
 
 10 == 10;
 10 != 9;");
-    let tokens = [
-        Token {
-        token_type: TokenType::from_string(String::from("let")),
-        value: None
-    }; 1];
-
     let lexer = Lexer::new(input_str);
 
     print!(">> ");

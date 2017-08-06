@@ -28,23 +28,6 @@ pub enum TokenType {
 }
 
 impl TokenType {
-    pub fn from_string(s: String) -> TokenType {
-        match s.trim().as_ref() {
-            "\n" => TokenType::EOF,
-            "=" => TokenType::ASSIGN,
-            "(" => TokenType::LPAREN,
-            ")" => TokenType::RPAREN,
-            "let" => TokenType::LET,
-            "+" => TokenType::PLUS,
-            "-" => TokenType::MINUS,
-            "," => TokenType::COMMA,
-            ";" => TokenType::SEMICOLON,
-            "{" => TokenType::LBRACE,
-            "}" => TokenType::RBRACE,
-            "func" => TokenType::FUNCTION,
-            c => TokenType::ILLEGAL
-        }
-    }
 }
 
 #[derive(Debug)]
@@ -68,6 +51,24 @@ impl Lexer {
         };
     }
 
+    pub fn from_string(&self, s: String) -> TokenType {
+        match s.trim().as_ref() {
+            "\n" => TokenType::EOF,
+            "=" => TokenType::ASSIGN,
+            "(" => TokenType::LPAREN,
+            ")" => TokenType::RPAREN,
+            "let" => TokenType::LET,
+            "+" => TokenType::PLUS,
+            "-" => TokenType::MINUS,
+            "," => TokenType::COMMA,
+            ";" => TokenType::SEMICOLON,
+            "{" => TokenType::LBRACE,
+            "}" => TokenType::RBRACE,
+            "func" => TokenType::FUNCTION,
+            c => TokenType::ILLEGAL
+        }
+    }
+
     pub fn read_char(&self) -> char {
         if self.read_position.get() >= self.input.len() {
             return '0';
@@ -81,7 +82,7 @@ impl Lexer {
 
     pub fn next_token(&self) -> Token {
         let c = self.read_char();
-        let token_type = TokenType::from_string(c.to_string());
+        let token_type = self.from_string(c.to_string());
         return Token {
             token_type: token_type,
             value: Some(Value::Str(c.to_string()))
@@ -164,6 +165,8 @@ fn next_token() {
 
 #[test]
 fn from_string() {
-    assert_eq!(TokenType::from_string(String::from("=")), TokenType::ASSIGN);
-    assert_eq!(TokenType::from_string(String::from("(")), TokenType::LPAREN);
+    let input = String::from("=()");
+    let l = &Lexer::new(input);
+    assert_eq!(l.from_string(String::from("=")), TokenType::ASSIGN);
+    assert_eq!(l.from_string(String::from("(")), TokenType::LPAREN);
 }
