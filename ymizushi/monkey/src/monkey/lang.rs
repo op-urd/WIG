@@ -15,6 +15,9 @@ pub enum TokenType {
     IDENT,
     INT,
     ASSIGN,
+    EQ,
+    BANG,
+    NOT_EQ,
     PLUS,
     MINUS,
     COMMA,
@@ -54,7 +57,15 @@ impl Lexer {
     pub fn from_string(&self, s: String) -> TokenType {
         match s.trim().as_ref() {
             "\n" => TokenType::EOF,
-            "=" => TokenType::ASSIGN,
+            "=" =>  {
+                if self.peek_char() == '=' {
+                    let ch = self.peek_char(); // chに退避させて次の文字を読む
+                    self.read_char();
+                    TokenType::EQ
+                } else {
+                    TokenType::ASSIGN
+                }
+            },
             "(" => TokenType::LPAREN,
             ")" => TokenType::RPAREN,
             "let" => TokenType::LET,
@@ -64,6 +75,16 @@ impl Lexer {
             ";" => TokenType::SEMICOLON,
             "{" => TokenType::LBRACE,
             "}" => TokenType::RBRACE,
+            "!" => {
+                if self.peek_char() == '=' {
+                    let ch = self.peek_char(); // chに退避させて次の文字を読む
+                    self.read_char();
+                    TokenType::NOT_EQ
+                } else {
+                    TokenType::BANG
+                }
+
+            },
             "func" => TokenType::FUNCTION,
             c => TokenType::ILLEGAL
         }
