@@ -21,3 +21,6 @@ let add = fn (a, b) { a+b;};
 ```
 
 
+
+## run test
+cargo test -- --nocapture

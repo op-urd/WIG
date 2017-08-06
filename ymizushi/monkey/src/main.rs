@@ -1,5 +1,5 @@
 mod monkey;
-use monkey::lang::{Lexer, Parser, Token, TokenType};
+use monkey::lang::{Lexer, Token, TokenType};
 use std::io::{self, Write};
 
 fn main() {
@@ -26,10 +26,7 @@ if (5 < 10) {
         value: None
     }; 1];
 
-    let mut c = ' ';
-    let lexer = Lexer::new(input_str, &mut c);
-    let parser = Parser {tokens:&tokens};
-    parser.parse();
+    let lexer = Lexer::new(input_str);
 
     print!(">> ");
     io::stdout().flush().unwrap();

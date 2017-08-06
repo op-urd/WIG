@@ -1,5 +1,14 @@
 use std::char;
+use std::cell::Cell;
 
+
+#[derive(Debug)]
+pub enum Value {
+    Int(String),
+    Str(String),
+}
+
+#[derive(Debug, PartialEq)]
 pub enum TokenType {
     ILLEGAL,
     EOF,
@@ -18,76 +27,61 @@ pub enum TokenType {
     LET,
 }
 
-pub enum Value {
-    Int(String),
-    Str(String),
-}
-
-pub struct Token {
-    pub token_type: TokenType,
-    pub value: Option<Value>,
-}
-
 impl TokenType {
     pub fn from_string(s: String) -> TokenType {
-        match s.as_ref() {
+        match s.trim().as_ref() {
             "\n" => TokenType::EOF,
+            "=" => TokenType::ASSIGN,
+            "(" => TokenType::LPAREN,
+            ")" => TokenType::RPAREN,
             "let" => TokenType::LET,
             "+" => TokenType::PLUS,
             "-" => TokenType::MINUS,
             "," => TokenType::COMMA,
             ";" => TokenType::SEMICOLON,
-            "(" => TokenType::LPAREN,
-            ")" => TokenType::RPAREN,
             "{" => TokenType::LBRACE,
             "}" => TokenType::RBRACE,
             "func" => TokenType::FUNCTION,
-            _ => TokenType::ILLEGAL
+            c => TokenType::ILLEGAL
         }
     }
 }
 
-pub struct Parser<'a> {
-    pub tokens: &'a [Token]
+#[derive(Debug)]
+pub struct Token {
+    pub token_type: TokenType,
+    pub value: Option<Value>,
 }
 
-impl<'a> Parser<'a> {
-    pub fn parse(&self) {
-        return ();
-    }
+pub struct Lexer {
+    input: String,
+    position: Cell<usize>,
+    read_position: Cell<usize>,
 }
 
-pub struct Lexer<'a> {
-    pub input: String,
-    pub position: usize,
-    pub read_position: usize,
-    pub ch: &'a mut char
-}
-
-impl<'a> Lexer<'a> {
-    pub fn new(input: String, c: &'a mut char) -> Lexer<'a> {
+impl Lexer {
+    pub fn new(input: String) -> Lexer {
         return Lexer {
             input: input,
-            position: 0,
-            read_position: 0,
-            ch: c
+            position: Cell::new(0),
+            read_position: Cell::new(0),
         };
     }
 
-    pub fn read_char(&'a mut self) -> char {
-        if self.read_position >= self.input.len() {
+    pub fn read_char(&self) -> char {
+        if self.read_position.get() >= self.input.len() {
             return '0';
         } else {
-            let c = self.input.chars().nth(self.read_position).unwrap();
-            self.position = self.read_position;
-            self.read_position += 1;
+            let c = self.input.chars().nth(self.read_position.get()).unwrap();
+            self.position.set(self.read_position.get());
+            self.read_position.set(self.read_position.get() + 1);
             return c;
         }
     }
 
-    pub fn next_token(&'a mut self) -> Token {
-        let token_type = TokenType::from_string(self.ch.to_string());
+    pub fn next_token(&self) -> Token {
         let c = self.read_char();
+        let token_type = TokenType::from_string(c.to_string());
         return Token {
             token_type: token_type,
             value: Some(Value::Str(c.to_string()))
@@ -95,32 +89,42 @@ impl<'a> Lexer<'a> {
     }
 
     pub fn peek_char(&self) -> char {
-        if self.read_position >= self.input.len() {
+        if self.read_position.get() >= self.input.len() {
             return '0';
         } else {
-            return self.input.chars().nth(self.read_position).unwrap();
+            return self.input.chars().nth(self.read_position.get()).unwrap();
         }
     }
 }
 
 
 #[test]
+fn read_char() {
+    let input = String::from("=!");
+    let l = &Lexer::new(input);
+    assert_eq!('=', l.read_char());
+    assert_eq!('!', l.read_char());
+    assert_eq!('0', l.read_char());
+}
+
+
+#[test]
+fn peek_char() {
+    let input = String::from("!=");
+    let l = &Lexer::new(input);
+    assert_eq!('!', l.peek_char());
+    assert_eq!('!', l.peek_char());
+}
+
+#[test]
 fn next_token() {
-    let input = String::from("=+(){},;");
-    let tests = [
-        (TokenType::ASSIGN, "="),
-        (TokenType::PLUS, "+"),
-        (TokenType::LPAREN, "("),
-        (TokenType::RPAREN, ")"),
-        (TokenType::LBRACE, "{"),
-        (TokenType::RBRACE, "}"),
-        (TokenType::COMMA, ","),
-        (TokenType::SEMICOLON, ";"),
-        (TokenType::EOF, ""),
-    ];
-    let l = &mut Lexer::new(input, ' ');
-    for e in tests.into_iter() {
-        let t = l.next_token();
-        assert_eq!(t.token_type, e.1);
-    }
+    let input = String::from("=");
+    let l = &Lexer::new(input);
+    assert_eq!(l.next_token().token_type, TokenType::ASSIGN);
+}
+
+#[test]
+fn from_string() {
+    assert_eq!(TokenType::from_string(String::from("=")), TokenType::ASSIGN);
+    assert_eq!(TokenType::from_string(String::from("(")), TokenType::LPAREN);
 }
