@@ -96,7 +96,13 @@ impl Lexer {
                 TokenType::FUNCTION
             },
             c => {
-                TokenType::ILLEGAL
+                if is_letter(c.chars().nth(0).unwrap()) {
+                    TokenType::ILLEGAL
+                } else if is_digit(c.chars().nth(0).unwrap()) {
+                    TokenType::ILLEGAL
+                } else {
+                    TokenType::ILLEGAL
+                }
             }
         };
         self.read_char();
@@ -168,8 +174,6 @@ fn is_letter(ch: char) -> bool {
 fn is_digit(ch: char) -> bool {
     return '0' <= ch && ch <= '9';
 }
-
-
 
 
 #[test]
