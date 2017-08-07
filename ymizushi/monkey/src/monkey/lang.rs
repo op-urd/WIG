@@ -26,6 +26,10 @@ pub enum TokenType {
     RPAREN,
     LBRACE,
     RBRACE,
+    SLASH,
+    ASTERISK,
+    LT,
+    GT,
     FUNCTION,
     LET,
 }
@@ -43,15 +47,19 @@ pub struct Lexer {
     input: String,
     position: Cell<usize>,
     read_position: Cell<usize>,
+    ch: Cell<char>
 }
 
 impl Lexer {
     pub fn new(input: String) -> Lexer {
-        return Lexer {
+        let l = Lexer {
             input: input,
             position: Cell::new(0),
             read_position: Cell::new(0),
+            ch: Cell::new('0')
         };
+        l.read_char();
+        return l;
     }
 
     pub fn from_string(&self, s: String) -> TokenType {
@@ -59,7 +67,7 @@ impl Lexer {
             "\n" => TokenType::EOF,
             "=" =>  {
                 if self.peek_char() == '=' {
-                    let ch = self.peek_char(); // chに退避させて次の文字を読む
+                    let ch = self.ch.get(); // chに退避させて次の文字を読む
                     self.read_char();
                     TokenType::EQ
                 } else {
@@ -75,9 +83,12 @@ impl Lexer {
             ";" => TokenType::SEMICOLON,
             "{" => TokenType::LBRACE,
             "}" => TokenType::RBRACE,
+            "/" => TokenType::SLASH,
+            "," => TokenType::COMMA,
+            "0" => TokenType::EOF,
             "!" => {
                 if self.peek_char() == '=' {
-                    let ch = self.peek_char(); // chに退避させて次の文字を読む
+                    let ch = self.ch.get(); // chに退避させて次の文字を読む
                     self.read_char();
                     TokenType::NOT_EQ
                 } else {
@@ -86,7 +97,9 @@ impl Lexer {
 
             },
             "func" => TokenType::FUNCTION,
-            c => TokenType::ILLEGAL
+            c => {
+                TokenType::ILLEGAL
+            }
         }
     }
 
@@ -120,7 +133,7 @@ impl Lexer {
 
     pub unsafe fn read_identifier(&self) -> String {
         let start_position = self.position.get();
-        let ch = self.peek_char();
+        let ch = self.ch.get();
         while is_letter(ch) {
             self.read_char();
         }
@@ -131,7 +144,7 @@ impl Lexer {
 
     pub unsafe fn read_number(&self) -> String {
         let start_position = self.position.get();
-        let ch = self.peek_char();
+        let ch = self.ch.get();
         while is_digit(ch) {
             self.read_char();
         }
@@ -141,7 +154,7 @@ impl Lexer {
     }
 
     pub fn skip_white_space(&self) {
-        let ch = self.peek_char();
+        let ch = self.ch.get();
         while ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r' {
             self.read_char();
         }
