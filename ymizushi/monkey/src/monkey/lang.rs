@@ -109,9 +109,9 @@ impl Lexer {
         } else {
             let c = self.input.chars().nth(self.read_position.get()).unwrap();
             self.ch.set(c);
-            self.position.set(self.read_position.get());
-            self.read_position.set(self.read_position.get() + 1);
         }
+        self.position.set(self.read_position.get());
+        self.read_position.set(self.read_position.get() + 1);
     }
 
     pub fn next_token(&self) -> Token {
@@ -176,18 +176,18 @@ fn is_digit(ch: char) -> bool {
 fn peek_char() {
     let input = String::from("!=");
     let l = &Lexer::new(input);
-    assert_eq!('!', l.peek_char());
-    assert_eq!('!', l.peek_char());
+    assert_eq!('=', l.peek_char());
+    assert_eq!('=', l.peek_char());
 }
 
-//#[test]
-//fn next_token() {
-//    let input = String::from("=()");
-//    let l = &Lexer::new(input);
-//    assert_eq!(l.next_token().token_type, TokenType::ASSIGN);
-//    assert_eq!(l.next_token().token_type, TokenType::LPAREN);
-//    assert_eq!(l.next_token().token_type, TokenType::RPAREN);
-//}
+#[test]
+fn next_token() {
+    let input = String::from("=()");
+    let l = &Lexer::new(input);
+    assert_eq!(l.next_token().token_type, TokenType::ASSIGN);
+    assert_eq!(l.next_token().token_type, TokenType::LPAREN);
+    assert_eq!(l.next_token().token_type, TokenType::RPAREN);
+}
 
 #[test]
 fn from_string() {
