@@ -1,6 +1,7 @@
 use std::char;
 use std::cell::Cell;
 use std::fmt;
+use std::collections::HashMap;
 
 
 pub struct Lexer {
@@ -70,10 +71,10 @@ impl Lexer {
             }
             "!" => {
                 if self.peek_char() == '=' {
-                    let ch = self.ch.get(); // chに退避させて次の文字を読む
+//                    let ch = self.ch.get(); // chに退避させて次の文字を読む
                     self.read_char();
                     Token {
-                        token_type: TokenType::NOT_EQ,
+                        token_type: TokenType::NotEq,
                         value: Some(Value::Str(String::from("!=")))
                     }
                 } else {
@@ -230,27 +231,43 @@ pub enum Value {
 pub enum TokenType {
     ILLEGAL,
     EOF,
-    IDENT,
+
+    Ident, // TODO: 使う
     INT,
+
     ASSIGN,
-    EQ,
-    BANG,
-    NOT_EQ,
     PLUS,
     MINUS,
+    BANG,
+    ASTERISK,
+    SLASH,
+    EQ,
+    NotEq,
+
+    LT,
+    GT,
+
     COMMA,
     SEMICOLON,
+
     LPAREN,
     RPAREN,
     LBRACE,
     RBRACE,
-    SLASH,
-    ASTERISK,
-    LT,
-    GT,
-    FUNCTION,
-    LET,
+
+    Function,
+    Let,
+    True,
+    False,
+    If,
+    Else,
+    Return
 }
+
+//fn lookup_ident(ident: String) -> TokenType {
+//    let mut book_reviews = HashMap::new();
+//    book_reviews.insert("Adventures of Huckleberry Finn","");
+//}
 
 #[derive(Debug)]
 pub struct Token {
