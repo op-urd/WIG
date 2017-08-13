@@ -44,7 +44,7 @@ impl Lexer {
                     self.read_char();
                     Token {
                         token_type: TokenType::Eq,
-                        value: Some(Value::Str(String::from("=="))) // TODO: 文字列を連結するように修正する
+                        value: Some(Value::Str(String::from("==")))
                     }
                 } else {
                     Token {
@@ -129,7 +129,7 @@ impl Lexer {
             }
             '{' => {
                 Token {
-                    token_type: TokenType::LBRACE,
+                    token_type: TokenType::Lbrace,
                     value: Some(Value::Str(String::from("{")))
                 }
             }
@@ -203,8 +203,7 @@ impl Lexer {
     }
 
     pub fn skip_white_space(&self) {
-        let ch = self.ch.get();
-        while ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r' {
+        while self.ch.get() == ' ' || self.ch.get() == '\t' || self.ch.get() == '\n' || self.ch.get() == '\r' {
             self.read_char();
         }
     }
@@ -233,6 +232,22 @@ pub enum Value {
     Str(String),
 }
 
+impl PartialEq for Value {
+    fn eq(&self, other: &Value) -> bool {
+        match *self {
+            Value::Str(ref s) => {
+                match *other {
+                    Value::Str(ref o) => {
+                        *s == *o
+                    },
+                    _ => false
+                }
+            }
+            _ => false
+        }
+    }
+}
+
 #[derive(Debug, PartialEq)]
 pub enum TokenType {
     Illegal,
@@ -258,7 +273,7 @@ pub enum TokenType {
 
     Lparen,
     Rparen,
-    LBRACE,
+    Lbrace,
     Rbrace,
 
     Function,
@@ -345,9 +360,87 @@ if (5 < 10) {
 
 10 == 10;
 10 != 9;");
+    let tests = vec![
+        (TokenType::Let, Value::Str(String::from("let"))),
+        (TokenType::Ident, Value::Str(String::from("five"))),
+        (TokenType::Assign, Value::Str(String::from("="))),
+        (TokenType::Int, Value::Str(String::from("5"))),
+//        (TokenType::Semicolon, Value::Str(String::from(";"))),
+        (TokenType::Let, Value::Str(String::from("let"))),
+        (TokenType::Ident, Value::Str(String::from("ten"))),
+        (TokenType::Assign, Value::Str(String::from("="))),
+        (TokenType::Int, Value::Str(String::from("10"))),
+//        (TokenType::Semicolon, Value::Str(String::from(";"))),
+        (TokenType::Let, Value::Str(String::from("let"))),
+        (TokenType::Ident, Value::Str(String::from("add"))),
+        (TokenType::Assign, Value::Str(String::from("="))),
+        (TokenType::Function, Value::Str(String::from("fn"))),
+//        (TokenType::Lparen, Value::Str(String::from("("))),
+        (TokenType::Ident, Value::Str(String::from("x"))),
+//        (TokenType::Comma, Value::Str(String::from(","))),
+        (TokenType::Ident, Value::Str(String::from("y"))),
+//        (TokenType::Rparen, Value::Str(String::from(")"))),
+        (TokenType::Lbrace, Value::Str(String::from("{"))),
+        (TokenType::Ident, Value::Str(String::from("x"))),
+        (TokenType::Plus, Value::Str(String::from("+"))),
+        (TokenType::Ident, Value::Str(String::from("y"))),
+        //        (TokenType::Semicolon, Value::Str(String::from(";"))),
+        (TokenType::Rbrace, Value::Str(String::from("}"))),
+        (TokenType::Semicolon, Value::Str(String::from(";"))),
+        (TokenType::Let, Value::Str(String::from("let"))),
+        (TokenType::Ident, Value::Str(String::from("result"))),
+        (TokenType::Assign, Value::Str(String::from("="))),
+        (TokenType::Ident, Value::Str(String::from("add"))),
+//        (TokenType::Lparen, Value::Str(String::from("("))),
+        (TokenType::Ident, Value::Str(String::from("five"))),
+        //        (TokenType::Comma, Value::Str(String::from(","))),
+        (TokenType::Ident, Value::Str(String::from("ten"))),
+        //        (TokenType::Rparen, Value::Str(String::from(")"))),
+        (TokenType::Semicolon, Value::Str(String::from(";"))),
+        (TokenType::Bang, Value::Str(String::from("!"))),
+        (TokenType::Minus, Value::Str(String::from("-"))),
+        (TokenType::Slash, Value::Str(String::from("/"))),
+        (TokenType::Asterisk, Value::Str(String::from("*"))),
+        (TokenType::Int, Value::Str(String::from("5"))),
+//        (TokenType::Semicolon, Value::Str(String::from(";"))),
+        (TokenType::Int, Value::Str(String::from("5"))),
+        (TokenType::Lt, Value::Str(String::from("<"))),
+        (TokenType::Int, Value::Str(String::from("10"))),
+        (TokenType::Gt, Value::Str(String::from(">"))),
+        (TokenType::Int, Value::Str(String::from("5"))),
+        //        (TokenType::Semicolon, Value::Str(String::from(";"))),
+        (TokenType::If, Value::Str(String::from("if"))),
+        (TokenType::Lparen, Value::Str(String::from("("))),
+        (TokenType::Int, Value::Str(String::from("5"))),
+        (TokenType::Lt, Value::Str(String::from("<"))),
+        (TokenType::Int, Value::Str(String::from("10"))),
+//        (TokenType::Rparen, Value::Str(String::from(")"))),
+        (TokenType::Lbrace, Value::Str(String::from("{"))),
+        (TokenType::Return, Value::Str(String::from("return"))),
+        (TokenType::True, Value::Str(String::from("true"))),
+        //        (TokenType::Semicolon, Value::Str(String::from(";"))),
+        (TokenType::Rbrace, Value::Str(String::from("}"))),
+        (TokenType::Else, Value::Str(String::from("else"))),
+        (TokenType::Lbrace, Value::Str(String::from("{"))),
+        (TokenType::Return, Value::Str(String::from("return"))),
+        (TokenType::False, Value::Str(String::from("false"))),
+        //        (TokenType::Semicolon, Value::Str(String::from(";"))),
+        (TokenType::Rbrace, Value::Str(String::from("}"))),
+        (TokenType::Int, Value::Str(String::from("10"))),
+        (TokenType::Eq, Value::Str(String::from("=="))),
+        (TokenType::Int, Value::Str(String::from("10"))),
+        //        (TokenType::Semicolon, Value::Str(String::from(";"))),
+        (TokenType::Int, Value::Str(String::from("10"))),
+        (TokenType::NotEq, Value::Str(String::from("!="))),
+        (TokenType::Int, Value::Str(String::from("9"))),
+        //        (TokenType::Semicolon, Value::Str(String::from(";"))),
+        (TokenType::Eof, Value::Str(String::from("\0"))),
+    ];
+
     let l = &Lexer::new(input);
-    assert_eq!(l.next_token().token_type, TokenType::Let);
-    assert_eq!(l.next_token().token_type, TokenType::Ident);
-    assert_eq!(l.next_token().token_type, TokenType::Assign);
-//    assert_eq!(l.next_token().token_type, TokenType::Int);
+    for e in &tests {
+        let t = l.next_token();
+        assert_eq!(t.token_type, e.0);
+        assert_eq!(t.value.unwrap(), e.1);
+    }
 }
