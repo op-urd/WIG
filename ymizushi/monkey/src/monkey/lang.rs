@@ -147,15 +147,15 @@ impl Lexer {
             }
             c => {
                 if is_letter(c) {
-                    let identifier = unsafe {self.read_identifier()};
+                    let identifier = self.read_identifier();
                     Token {
-                        token_type: unsafe {self.lookup_ident(&identifier)},
+                        token_type: self.lookup_ident(&identifier),
                         value: Some(Value::Str(identifier))
                     }
                 } else if is_digit(c) {
                     Token {
                         token_type: TokenType::Int,
-                        value: Some(Value::Str(unsafe { self.read_number()}))
+                        value: Some(Value::Str(self.read_number()))
                     }
                 } else {
                     Token {
@@ -169,17 +169,17 @@ impl Lexer {
         token
     }
 
-    pub unsafe fn read_identifier(&self) -> String {
+    pub fn read_identifier(&self) -> String {
         let start_position = self.position.get();
         while is_letter(self.ch.get()) {
             self.read_char();
         }
         let end_position = self.position.get();
-        let s = self.input.slice_unchecked(start_position, end_position);
+        let s = &(self.input)[start_position..end_position];
         s.to_string()
     }
 
-    pub unsafe fn lookup_ident(&self, s: &str) -> TokenType {
+    pub fn lookup_ident(&self, s: &str) -> TokenType {
         match s {
             "fn" => TokenType::Function,
             "let" => TokenType::Let,
@@ -192,13 +192,13 @@ impl Lexer {
         }
     }
 
-    pub unsafe fn read_number(&self) -> String {
+    pub fn read_number(&self) -> String {
         let start_position = self.position.get();
         while is_digit(self.ch.get()) {
             self.read_char();
         }
         let end_position = self.position.get();
-        let s = self.input.slice_unchecked(start_position, end_position);
+        let s = &(self.input)[start_position..end_position];
         s.to_string()
     }
 
@@ -210,7 +210,7 @@ impl Lexer {
 
     pub fn peek_char(&self) -> char {
         if self.read_position.get() >= self.input.len() {
-            '0'
+            '\0'
         } else {
             self.input.chars().nth(self.read_position.get()).unwrap()
         }
@@ -239,11 +239,9 @@ impl PartialEq for Value {
                 match *other {
                     Value::Str(ref o) => {
                         *s == *o
-                    },
-                    _ => false
+                    }
                 }
             }
-            _ => false
         }
     }
 }
@@ -299,22 +297,12 @@ impl fmt::Display for Token  {
     }
 }
 
-// Test
 #[test]
 fn peek_char() {
     let input = String::from("!=");
     let l = &Lexer::new(input);
     assert_eq!('=', l.peek_char());
     assert_eq!('=', l.peek_char());
-}
-
-#[test]
-fn next_token_base() {
-    let input = String::from("=()");
-    let l = &Lexer::new(input);
-    assert_eq!(l.next_token().token_type, TokenType::Assign);
-    assert_eq!(l.next_token().token_type, TokenType::Lparen);
-    assert_eq!(l.next_token().token_type, TokenType::Rparen);
 }
 
 #[test]
