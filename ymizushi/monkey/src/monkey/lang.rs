@@ -293,7 +293,10 @@ pub struct Token {
 
 impl fmt::Display for Token  {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "({})", 1.0)
+        match self.value {
+            Some(Value::Str(ref s)) => write!(f, "(value: {})", s),
+            _ => write!(f, "(value: {})", "none")
+        }
     }
 }
 

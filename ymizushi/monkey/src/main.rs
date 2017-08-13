@@ -1,5 +1,5 @@
 mod monkey;
-use monkey::lang::{Lexer};
+use monkey::lang::{Lexer, TokenType};
 use std::io::{self, Write};
 
 fn main() {
@@ -9,8 +9,13 @@ fn main() {
     match io::stdin().read_line(&mut input) {
         Ok(_) => {
             let lexer = Lexer::new(input);
-            let token = lexer.next_token();
-            println!("{}", token);
+            loop {
+                let t = lexer.next_token();
+                if t.token_type == TokenType::Eof {
+                    break;
+                }
+                println!("{}", t);
+            }
             io::stdout().flush().unwrap();
         }
         Err(error) => println!("error: {}", error)
