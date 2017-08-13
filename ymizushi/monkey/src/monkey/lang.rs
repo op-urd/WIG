@@ -1,8 +1,6 @@
 use std::char;
 use std::cell::Cell;
 use std::fmt;
-use std::collections::HashMap;
-
 
 pub struct Lexer {
     input: String,
@@ -152,9 +150,10 @@ impl Lexer {
             }
             c => {
                 if is_letter(c.chars().nth(0).unwrap()) {
+                    let identifier = unsafe {self.read_identifier()};
                     Token {
-                        token_type: TokenType::ILLEGAL, // TODO: lookup_identを実装する
-                        value: Some(Value::Str(unsafe {self.read_identifier()}))
+                        token_type: unsafe {self.lookup_ident(&identifier)},
+                        value: Some(Value::Str(identifier))
                     }
                 } else if is_digit(c.chars().nth(0).unwrap()) {
                     Token {
@@ -181,7 +180,20 @@ impl Lexer {
         }
         let end_position = self.position.get();
         let s = self.input.slice_unchecked(start_position, end_position);
-        return s.to_string();
+        s.to_string()
+    }
+
+    pub unsafe fn lookup_ident(&self, s: &str) -> TokenType {
+        match s {
+            "fn" => TokenType::Function,
+            "let" => TokenType::Let,
+            "true" => TokenType::True,
+            "false" => TokenType::False,
+            "if" => TokenType::If,
+            "else" => TokenType::Else,
+            "return" => TokenType::Return,
+            _ => TokenType::Ident
+        }
     }
 
     pub unsafe fn read_number(&self) -> String {
@@ -223,7 +235,6 @@ fn is_digit(ch: char) -> bool {
 
 #[derive(Debug)]
 pub enum Value {
-    Int(String),
     Str(String),
 }
 
@@ -232,7 +243,7 @@ pub enum TokenType {
     ILLEGAL,
     EOF,
 
-    Ident, // TODO: 使う
+    Ident,
     INT,
 
     ASSIGN,
@@ -264,10 +275,7 @@ pub enum TokenType {
     Return
 }
 
-//fn lookup_ident(ident: String) -> TokenType {
-//    let mut book_reviews = HashMap::new();
-//    book_reviews.insert("Adventures of Huckleberry Finn","");
-//}
+
 
 #[derive(Debug)]
 pub struct Token {
@@ -280,8 +288,6 @@ impl fmt::Display for Token  {
         write!(f, "({})", 1.0)
     }
 }
-
-
 
 // Test
 #[test]
