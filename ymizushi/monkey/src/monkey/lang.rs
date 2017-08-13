@@ -34,13 +34,13 @@ impl Lexer {
 
     pub fn next_token(&self) -> Token {
         self.skip_white_space();
-        let ch = self.ch.get().to_string();
+        let ch = self.ch.get();
         self.get_token(ch)
     }
 
-    pub fn get_token(&self, s: String) -> Token {
-        let token = match s.trim().as_ref() {
-            "=" => {
+    pub fn get_token(&self, s: char) -> Token {
+        let token = match s {
+            '=' => {
                 if self.peek_char() == '=' {
                     self.read_char();
                     Token {
@@ -54,19 +54,19 @@ impl Lexer {
                     }
                 }
             }
-            "+" => {
+            '+' => {
                 Token {
                     token_type: TokenType::Plus,
                     value: Some(Value::Str(String::from("+")))
                 }
             }
-            "-" => {
+            '-' => {
                 Token {
                     token_type: TokenType::Minus,
                     value: Some(Value::Str(String::from("-")))
                 }
             }
-            "!" => {
+            '!' => {
                 if self.peek_char() == '=' {
                     self.read_char();
                     Token {
@@ -80,74 +80,73 @@ impl Lexer {
                     }
                 }
             }
-            "/" => {
+            '/' => {
                 Token {
                     token_type: TokenType::Slash,
                     value: Some(Value::Str(String::from("/")))
                 }
             }
-            "*" => {
+            '*' => {
                 Token {
                     token_type: TokenType::Asterisk,
                     value: Some(Value::Str(String::from("*")))
                 }
             }
-            "<" => {
+            '<' => {
                 Token {
                     token_type: TokenType::Lt,
                     value: Some(Value::Str(String::from("<")))
                 }
             }
-            ">" => {
+            '>' => {
                 Token {
                     token_type: TokenType::Gt,
                     value: Some(Value::Str(String::from(">")))
                 }
             }
-            ";" => {
+            ';' => {
                 Token {
                     token_type: TokenType::Semicolon,
                     value: Some(Value::Str(String::from(";")))
                 }
             }
-            "(" => {
+            '(' => {
                 Token {
                     token_type: TokenType::Lparen,
                     value: Some(Value::Str(String::from("(")))
                 }
             }
-            ")" => {
+            ')' => {
                 Token {
                     token_type: TokenType::Rparen,
                     value: Some(Value::Str(String::from(")")))
                 }
             }
-            "," => {
+            ',' => {
                 Token {
                     token_type: TokenType::Comma,
                     value: Some(Value::Str(String::from(",")))
                 }
             }
-            "{" => {
+            '{' => {
                 Token {
                     token_type: TokenType::LBRACE,
                     value: Some(Value::Str(String::from("{")))
                 }
             }
-            "}" => {
+            '}' => {
                 Token {
                     token_type: TokenType::Rbrace,
                     value: Some(Value::Str(String::from("}")))
                 }
             }
-            "\0" => {
+            '\0' => {
                 Token {
                     token_type: TokenType::Eof,
                     value: Some(Value::Str(String::from("\0")))
                 }
             }
             c => {
-                let c = c.chars().nth(0).unwrap();
                 if is_letter(c) {
                     let identifier = unsafe {self.read_identifier()};
                     Token {
@@ -351,5 +350,5 @@ if (5 < 10) {
     assert_eq!(l.next_token().token_type, TokenType::Let);
     assert_eq!(l.next_token().token_type, TokenType::Ident);
     assert_eq!(l.next_token().token_type, TokenType::Assign);
-//    assert_eq!(l.next_token().token_type, TokenType::Int);
+    assert_eq!(l.next_token().token_type, TokenType::Int);
 }
