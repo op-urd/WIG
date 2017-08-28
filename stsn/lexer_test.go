@@ -1,21 +1,19 @@
-package lexer
+package main
 
 import (
 	"fmt"
 	"testing"
-
-	"github.com/satoshun/wig/token"
 )
 
 func TestNextToken(t *testing.T) {
 	input := `=+(),;`
 	tests := []struct {
-		expectedType    token.TokenType
+		expectedType    TokenType
 		expectedLiteral string
 	}{
-		{token.ASSIGN, "="},
+		{ASSIGN, "="},
 	}
-	l := New(input)
+	l := NewLexer(input)
 	for i, _ := range tests {
 		t := l.NextToken()
 		fmt.Printf("%d %s", i, t)

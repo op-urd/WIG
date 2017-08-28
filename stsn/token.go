@@ -1,4 +1,4 @@
-package token
+package main
 
 const (
 	ILLEGAL = "ILLEGAL"
