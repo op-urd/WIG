@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+)
 
 const (
 	_ int = iota
@@ -33,6 +36,7 @@ func NewParser(l *Lexer) *Parser {
 
 	p.prefixParseFns = make(map[TokenType]prefixParseFn)
 	p.registerPrefix(IDENT, p.parseIdentifier)
+	p.registerPrefix(INT, p.parseIntegerLiteral)
 
 	// Read two tokens, so curToken and peekToken are both set
 	p.nextToken()
@@ -166,4 +170,19 @@ func (p *Parser) parseExpression(precedence int) Expression {
 
 func (p *Parser) parseIdentifier() Expression {
 	return &Identifier{Token: p.curToken, Value: p.curToken.Literal}
+}
+
+func (p *Parser) parseIntegerLiteral() Expression {
+	lit := &IntegerLiteral{Token: p.curToken}
+
+	value, err := strconv.ParseInt(p.curToken.Literal, 0, 64)
+	if err != nil {
+		msg := fmt.Sprintf("could not parse %q as integer", p.curToken.Literal)
+		p.errors = append(p.errors, msg)
+		return nil
+	}
+
+	lit.Value = value
+
+	return lit
 }
