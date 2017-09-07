@@ -1,5 +1,39 @@
 use monkey::lang::{Token, Value};
 
+trait Node {
+    fn token_literal(&self) -> String;
+}
+
+trait Statement: Node {
+    fn statement_node(&self);
+}
+
+trait Expression: Node {
+    fn expression_node(&self);
+}
+
+struct Program {
+    statements: Vec<Box<Statement>>
+}
+
+impl Program {
+    fn token_literal(&self) -> String {
+        if self.statements.len() > 0 {
+            self.statements[0].token_literal()
+        } else {
+            ""
+        }
+    }
+
+    fn string(&self) -> String {
+        let mut out = String::from("");
+        for s in self.statements {
+            out.push_str(s);
+        }
+        out
+    }
+}
+
 struct Identifier {
     token: Token,
     value: String
@@ -21,14 +55,8 @@ impl Identifier {
     }
 }
 
-trait Node {
-    fn token_literal() -> &'static str;
-}
 
 
-trait Statement: Node {
-    fn statement_node();
-}
 
 
 struct LetStatement {
@@ -305,30 +333,6 @@ impl Node for LetStatement {
     }
 }
 
-trait Expression: Node {
-    fn expression_node();
-}
 
-struct Program {
-    statements: [Statement];
-}
-
-impl Program {
-    fn token_literal(&self) -> String {
-        if self.statements.len() > 0 {
-            self.statements[0].token_literal()
-        } else {
-            ""
-        }
-    }
-
-    fn string(&self) -> String {
-        let mut out = String::from("");
-        for s in self.statements {
-            out.push_str(s);
-        }
-        out
-    }
-}
 
 
