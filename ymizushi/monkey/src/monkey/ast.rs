@@ -24,13 +24,25 @@ impl Program {
             ""
         }
     }
+}
 
-    fn string(&self) -> String {
-        let mut out = String::from("");
-        for s in self.statements {
-            out.push_str(s);
+struct LetStatement {
+    token: Token,
+    name: Identifier,
+    value: Expression,
+}
+
+impl Statement for LetStatement {
+    fn statement_node(&self) {}
+}
+
+
+impl LetStatement {
+    fn token_literal(&self) -> String {
+        match self.token.value {
+            Some(Value::Str(s)) => s,
+            None => ""
         }
-        out
     }
 }
 
@@ -40,63 +52,31 @@ struct Identifier {
 }
 
 impl Identifier {
-    fn expression_node() {
-    }
+    fn expression_node() {}
 
     fn token_literal(&self) -> String {
         match self.token.value {
             Some(Value::Str(s)) => s,
-            None => String::from("")
+            None => ""
         }
     }
-
-    fn string(&self) -> string {
-        self.value
-    }
 }
-
-
-
-
-
-struct LetStatement {
-    token: String,
-    name: String,
-    value: String,
-}
-
-
-impl Statement for LetStatement {
-    fn statement_node(&self) {}
-
-    fn token_literal(&self) -> String {
-        self.token
-    }
-
-    fn string(&self) -> String {
-        let mut out = String::from("");
-        out.push_str(self.token_literal());
-        out.push_str(" ");
-        out.push_str(self.name);
-        out.push_str(" = ");
-
-        if self.value != "" {
-            out.push_str(self.value);
-        }
-        out.push_str(";");
-        out
-    }
-}
-
 
 struct ReturnStatement {
     token: Token,
     return_value: Expression,
 }
 
+
+
+
+
+
+
+
+
 impl Statement for ReturnStatement {
-    fn statement_node(&self) {
-    }
+    fn statement_node(&self) {}
 
     fn token_literal(&self) -> String {
         self.token.literal
@@ -133,7 +113,7 @@ impl ExpressionStatement {
         if self.expression != None {
             self.expression.string()
         } else {
-           ""
+            ""
         }
     }
 }
@@ -163,8 +143,7 @@ struct PrefixExpression {
 }
 
 impl PrefixExpression {
-    fn expression_node(&self) {
-    }
+    fn expression_node(&self) {}
 
     fn token_literal(&self) -> String {
         self.token.literal
@@ -245,7 +224,6 @@ impl IfExpression {
         }
         out.string()
     }
-
 }
 
 struct BlockStatement {
@@ -324,7 +302,6 @@ impl CallExpression {
 
         out.string()
     }
-
 }
 
 impl Node for LetStatement {
