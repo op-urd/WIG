@@ -18,7 +18,7 @@ type Statement interface {
 
 type Expression interface {
 	Node
-	ExpressionNode()
+	expressionNode()
 }
 
 type Program struct {
@@ -94,7 +94,7 @@ type Identifier struct {
 	Value string
 }
 
-func (i *Identifier) ExpressionNode()      {}
+func (i *Identifier) expressionNode()      {}
 func (i *Identifier) statementNode()       {}
 func (i *Identifier) TokenLiteral() string { return i.Token.Literal }
 func (i *Identifier) String() string {
@@ -115,3 +115,12 @@ type ReturnStatement struct {
 
 func (rs *ReturnStatement) statementNode()       {}
 func (rs *ReturnStatement) TokenLiteral() string { return rs.Token.Literal }
+
+type IntegerLiteral struct {
+	Token token.Token
+	Value int64
+}
+
+func (il *IntegerLiteral) expressionNode()      {}
+func (il *IntegerLiteral) TokenLiteral() string { return il.Token.Literal }
+func (il *IntegerLiteral) String() string       { return il.Token.Literal }
