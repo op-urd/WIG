@@ -11,6 +11,10 @@ func Eval(node Node) Object {
 	// Statements
 	case *Program:
 		return evalStatements(node.Statements)
+	case *BlockStatement:
+		return evalStatements(node.Statements)
+	case *IfExpression:
+		return evalIfExpression(node)
 	case *ExpressionStatement:
 		return Eval(node.Expression)
 	case *IntegerLiteral:
@@ -27,6 +31,31 @@ func Eval(node Node) Object {
 	}
 
 	return nil
+}
+
+func evalIfExpression(ie *IfExpression) Object {
+	condition := Eval(ie.Condition)
+
+	if isTruthy(condition) {
+		return Eval(ie.Consequence)
+	} else if ie.Alternative != nil {
+		return Eval(ie.Alternative)
+	} else {
+		return SNULL
+	}
+}
+
+func isTruthy(obj Object) bool {
+	switch obj {
+	case SNULL:
+		return false
+	case STRUE:
+		return true
+	case SFALSE:
+		return false
+	default:
+		return true
+	}
 }
 
 func evalInfixExpression(operator string, left, right Object) Object {
