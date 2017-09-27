@@ -10,9 +10,9 @@ func Eval(node Node) Object {
 	switch node := node.(type) {
 	// Statements
 	case *Program:
-		return evalStatements(node.Statements)
+		return evalProgram(node)
 	case *BlockStatement:
-		return evalStatements(node.Statements)
+		return evalBlockStatement(node)
 	case *IfExpression:
 		return evalIfExpression(node)
 	case *ExpressionStatement:
@@ -28,9 +28,40 @@ func Eval(node Node) Object {
 		left := Eval(node.Left)
 		right := Eval(node.Right)
 		return evalInfixExpression(node.Operator, left, right)
+	case *ReturnStatement:
+		val := Eval(node.ReturnValue)
+		return &ReturnValue{Value: val}
 	}
 
 	return nil
+}
+
+func evalBlockStatement(block *BlockStatement) Object {
+	var result Object
+
+	for _, statement := range block.Statements {
+		result = Eval(statement)
+
+		if result != nil && result.Type() == RETURN_VALUE_OBJ {
+			return result
+		}
+	}
+
+	return result
+}
+
+func evalProgram(program *Program) Object {
+	var result Object
+
+	for _, statement := range program.Statements {
+		result = Eval(statement)
+
+		if returnValue, ok := result.(*ReturnValue); ok {
+			return returnValue.Value
+		}
+	}
+
+	return result
 }
 
 func evalIfExpression(ie *IfExpression) Object {
@@ -141,6 +172,10 @@ func evalStatements(stmts []Statement) Object {
 
 	for _, statement := range stmts {
 		result = Eval(statement)
+
+		if returnValue, ok := result.(*ReturnValue); ok {
+			return returnValue.Value
+		}
 	}
 	return result
 }
